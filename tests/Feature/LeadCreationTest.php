@@ -1,10 +1,16 @@
 <?php
 
+use App\Jobs\ProcessLeadAutomation;
 use App\Models\Lead;
 use App\Models\LeadAnalysis;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    Queue::fake([ProcessLeadAutomation::class]);
+});
 
 test('it creates a lead successfully with full details', function () {
     $payload = [

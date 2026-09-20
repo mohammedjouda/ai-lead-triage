@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\LeadCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeadRequest;
 use App\Models\Lead;
@@ -16,6 +17,8 @@ class LeadController extends Controller
             'source' => $request->validated('source') ?? 'website',
             'status' => 'new',
         ]);
+
+        event(new LeadCreated($lead));
 
         return response()->json([
             'message' => 'Lead created successfully.',

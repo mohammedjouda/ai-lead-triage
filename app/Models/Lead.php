@@ -10,6 +10,13 @@ class Lead extends Model
 {
     use HasFactory;
 
+    protected $attributes = [
+        'source' => 'website',
+        'status' => 'new',
+        'automation_status' => 'pending',
+        'automation_attempts' => 0,
+    ];
+
     protected $fillable = [
         'name',
         'email',
@@ -18,7 +25,20 @@ class Lead extends Model
         'message',
         'source',
         'status',
+        'automation_status',
+        'automation_attempts',
+        'automation_last_attempted_at',
+        'automation_processed_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'automation_attempts' => 'integer',
+            'automation_last_attempted_at' => 'datetime',
+            'automation_processed_at' => 'datetime',
+        ];
+    }
 
     public function analysis(): HasOne
     {
