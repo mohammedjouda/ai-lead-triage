@@ -10,6 +10,20 @@ use Illuminate\Http\JsonResponse;
 
 class LeadController extends Controller
 {
+    public function index(): JsonResponse
+    {
+        $leads = Lead::with('analysis')->latest()->paginate(20);
+
+        return response()->json($leads);
+    }
+
+    public function show(Lead $lead): JsonResponse
+    {
+        return response()->json([
+            'data' => $lead->load('analysis'),
+        ]);
+    }
+
     public function store(StoreLeadRequest $request): JsonResponse
     {
         $lead = Lead::create([
