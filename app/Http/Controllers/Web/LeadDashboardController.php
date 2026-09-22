@@ -59,6 +59,59 @@ class LeadDashboardController extends Controller
     }
 
     /**
+     * Store a lead from the web form submission.
+     */
+    public function store(\App\Http\Requests\StoreLeadRequest $request)
+    {
+        $lead = Lead::create([
+            ...$request->validated(),
+            'source' => $request->validated('source') ?? 'website',
+            'status' => 'new',
+        ]);
+
+        event(new \App\Events\LeadCreated($lead));
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'تم استلام طلبكم بنجاح.',
+                'data' => [
+                    'id' => $lead->id,
+                    'status' => $lead->status,
+                ],
+            ], 201);
+        }
+
+        return redirect()->route('leads.dashboard')->with('success', "تم تسجيل الطلب برقم #{$lead->id} وتوجيهه للفرز الآلي بنجاح.");
+    }
+
+    /**
+     * Retry sending lead to n8n automation pipeline.
+     */
+    public function retry(Lead $lead, \App\Services\Automation\N8nLeadAutomationService $automationService)
+    {
+        try {
+            $automationService->send($lead);
+
+            $lead->update([
+                'automation_status' => 'processed',
+                'automation_processed_at' => now(),
+                'automation_attempts' => $lead->automation_attempts + 1,
+                'automation_last_attempted_at' => now(),
+            ]);
+
+            return back()->with('success', "تم إرسال الطلب رقم #{$lead->id} بنجاح إلى n8n.");
+        } catch (\Throwable $e) {
+            $lead->update([
+                'automation_status' => 'failed',
+                'automation_attempts' => $lead->automation_attempts + 1,
+                'automation_last_attempted_at' => now(),
+            ]);
+
+            return back()->with('error', "فشل إرسال الطلب رقم #{$lead->id} إلى n8n: {$e->getMessage()}");
+        }
+    }
+
+    /**
      * Update lead business status (e.g. from qualified to contacted or converted).
      */
     public function updateStatus(Request $request, Lead $lead)

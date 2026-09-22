@@ -1,112 +1,100 @@
 @extends('layouts.app')
 
-@section('title', 'إرسال طلب استفسار جديد — AI Lead Triage')
+@section('title', 'تقديم طلب استفسار جديد — AI Lead Triage')
 
 @section('content')
 <div class="max-w-3xl mx-auto">
-    <!-- Header Hero -->
+    <!-- Header -->
     <div class="text-center mb-8">
-        <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             تواصل معنا لتطوير أعمالك
         </h1>
-        <p class="mt-2 text-base text-slate-600">
-            أرسل طلبك أو استفسارك هنا، وسيتولى نظام التوجيه الذكي (AI Triage) تصنيفه وتوجيهه فوراً للفريق المختص.
+        <p class="mt-2 text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
+            يرجى تزويدنا بتفاصيل مشروعك أو استفسارك التجاري. يتولى نظام الفرز الذكي تحليل المتطلبات وتحديد أولوياتها لضمان توجيهها للفريق المتخصص بالسرعة المطلوبة.
         </p>
     </div>
 
-    <!-- Quick Presets for Instant Testing -->
-    <div class="mb-6 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex items-center gap-2 mb-3 text-xs font-bold text-slate-500 uppercase tracking-wider">
-            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            نماذج تجريبية سريعة (اضغط للتعبئة التلقائية):
-        </div>
-        <div class="flex flex-wrap gap-2">
-            <button type="button" onclick="fillPreset(1)" 
-                    class="text-xs px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 font-medium transition-colors border border-rose-200">
-                🔥 طلب متجر عاجل (High Urgency)
-            </button>
-            <button type="button" onclick="fillPreset(2)" 
-                    class="text-xs px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors border border-amber-200">
-                ⚡ استشارة أتمتة AI (Medium Urgency)
-            </button>
-            <button type="button" onclick="fillPreset(3)" 
-                    class="text-xs px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 font-medium transition-colors border border-sky-200">
-                ❄️ استفسار عام وبسيط (Low Urgency)
-            </button>
-        </div>
-    </div>
-
-    <!-- Main Lead Submission Form -->
-    <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-200/50 border border-slate-200">
+    <!-- Main Lead Submission Card -->
+    <div class="bg-white rounded-2xl p-6 sm:p-10 border border-slate-200 shadow-sm">
         <form id="leadForm" onsubmit="submitLead(event)" class="space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- Name -->
+            @csrf
+
+            <!-- Contact & Company Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                    <label for="name" class="block text-sm font-semibold text-slate-700 mb-1">اسم العميل / جهة الاتصال</label>
-                    <input type="text" id="name" name="name" placeholder="مثال: م. أحمد الخالد"
-                           class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-sm">
+                    <label for="name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        اسم جهة الاتصال / العميل
+                    </label>
+                    <input type="text" id="name" name="name" placeholder="مثال: أحمد عبد الله"
+                           class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-slate-800 focus:ring-1 focus:ring-slate-800 outline-none transition-all placeholder:text-slate-400">
                 </div>
 
-                <!-- Company -->
                 <div>
-                    <label for="company" class="block text-sm font-semibold text-slate-700 mb-1">اسم الشركة أو النشاط</label>
-                    <input type="text" id="company" name="company" placeholder="مثال: متجر الأفق للمنتجات الرياضية"
-                           class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-sm">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- Email -->
-                <div>
-                    <label for="email" class="block text-sm font-semibold text-slate-700 mb-1">البريد الإلكتروني</label>
-                    <input type="email" id="email" name="email" placeholder="client@example.com"
-                           class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-sm" dir="ltr">
-                </div>
-
-                <!-- Phone -->
-                <div>
-                    <label for="phone" class="block text-sm font-semibold text-slate-700 mb-1">رقم الهاتف / الواتساب</label>
-                    <input type="text" id="phone" name="phone" placeholder="+962 79 123 4567"
-                           class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-sm" dir="ltr">
+                    <label for="company" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        اسم المنشأة أو الشركة
+                    </label>
+                    <input type="text" id="company" name="company" placeholder="مثال: شركة التطوير الحديث"
+                           class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-slate-800 focus:ring-1 focus:ring-slate-800 outline-none transition-all placeholder:text-slate-400">
                 </div>
             </div>
 
-            <!-- Source -->
+            <!-- Email & Phone Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                    <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        البريد الإلكتروني للعمل
+                    </label>
+                    <input type="email" id="email" name="email" placeholder="name@company.com" dir="ltr"
+                           class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-slate-800 focus:ring-1 focus:ring-slate-800 outline-none transition-all placeholder:text-slate-400">
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        رقم الهاتف / الواتساب
+                    </label>
+                    <input type="text" id="phone" name="phone" placeholder="+966 50 123 4567" dir="ltr"
+                           class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-slate-800 focus:ring-1 focus:ring-slate-800 outline-none transition-all placeholder:text-slate-400">
+                </div>
+            </div>
+
+            <!-- Source Channel -->
             <div>
-                <label for="source" class="block text-sm font-semibold text-slate-700 mb-1">مصدر الطلب</label>
+                <label for="source" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    قناة الاستفسار أو المصدر
+                </label>
                 <select id="source" name="source" 
-                        class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-sm bg-white">
-                    <option value="website" selected>🌐 الموقع الإلكتروني (Website Form)</option>
-                    <option value="whatsapp">💬 واتساب (WhatsApp)</option>
-                    <option value="instagram">📸 انستغرام (Instagram)</option>
-                    <option value="facebook">📘 فيسبوك (Facebook)</option>
-                    <option value="api">🔌 واجهة برمجية (API)</option>
-                    <option value="manual">👤 إدخال يدوي (Manual)</option>
+                        class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-800 text-sm focus:border-slate-800 focus:ring-1 focus:ring-slate-800 outline-none transition-all bg-white">
+                    <option value="website" selected>الموقع الإلكتروني (Website Form)</option>
+                    <option value="whatsapp">محادثة واتساب (WhatsApp)</option>
+                    <option value="linkedin">لينكد إن (LinkedIn)</option>
+                    <option value="email">البريد الإلكتروني المباشر (Direct Email)</option>
+                    <option value="manual">إدخال مباشر عبر المبيعات (Manual Entry)</option>
                 </select>
             </div>
 
-            <!-- Unstructured Message (Core Text) -->
+            <!-- Unstructured Message Content -->
             <div>
-                <div class="flex justify-between items-center mb-1">
-                    <label for="message" class="block text-sm font-semibold text-slate-700">
-                        نص الطلب أو الاستفسار غير المنظم <span class="text-rose-500">*</span>
+                <div class="flex justify-between items-center mb-1.5">
+                    <label for="message" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        نص الطلب أو الاستفسار غير المنظم <span class="text-rose-600">*</span>
                     </label>
-                    <span class="text-xs text-slate-400">النص الذي سيقوم Gemini بتحليله</span>
+                    <span class="text-[11px] text-slate-400 font-medium">يقوم نموذج الذكاء الاصطناعي بتحليله وتحديد أولويته</span>
                 </div>
-                <textarea id="message" name="message" rows="4" required
-                          placeholder="اكتب هنا طلبك بحرية... مثال: مرحبا، عندي متجر وأريد موقع إلكتروني جديد ولدينا إطلاق بعد 10 أيام. كم السعر؟"
-                          class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-sm leading-relaxed"></textarea>
-                <p id="messageError" class="mt-1 text-xs text-rose-600 hidden"></p>
+                <textarea id="message" name="message" rows="5" required
+                          placeholder="يرجى كتابة تفاصيل احتياجك أو متطلباتك هنا بحرية... على سبيل المثال: نحتاج إلى تطوير منصة سحابية لإدارة الطلبات مع ربط بوابات دفع، وموعد إطلاقنا المستهدف خلال 3 أسابيع. نود معرفة التكلفة والمدة التقديرية للتنفيذ."
+                          class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-slate-800 focus:ring-1 focus:ring-slate-800 outline-none transition-all leading-relaxed placeholder:text-slate-400"></textarea>
+                <p id="messageError" class="mt-1.5 text-xs text-rose-600 hidden font-medium"></p>
             </div>
 
-            <!-- Submit Button -->
-            <div>
+            <!-- Submit Action -->
+            <div class="pt-2">
                 <button type="submit" id="submitBtn" 
-                        class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold text-base shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2">
-                    <span id="btnText">🚀 إرسال الطلب وتشغيل الفرز الآلي</span>
-                    <svg id="btnSpinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" fill="none" viewBox="0 0 24 24">
+                        class="w-full py-3 px-5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2">
+                    <svg id="btnIcon" class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    <span id="btnText">إرسال طلب الاستفسار وبدء الفرز</span>
+                    <svg id="btnSpinner" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white hidden" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -114,26 +102,27 @@
             </div>
         </form>
 
-        <!-- Dynamic Success / Triage In-Progress State -->
-        <div id="successBox" class="mt-6 p-6 rounded-2xl bg-emerald-50 border border-emerald-200 hidden transition-all">
+        <!-- Professional Submission Confirmation Card -->
+        <div id="successBox" class="mt-4 p-6 sm:p-8 rounded-xl bg-slate-50 border border-slate-200 hidden">
             <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 </div>
                 <div class="flex-grow">
-                    <h3 class="text-base font-bold text-emerald-900">تم استلام طلبك بنجاح!</h3>
-                    <p class="text-sm text-emerald-700 mt-1">
-                        تم تسجيل الطلب برقم تعريفي <strong id="leadIdBadge" class="bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded">#--</strong>، وبدأت الآن عملية الفرز الآلي عبر الذكاء الاصطناعي (Gemini) وإرسال الإشعارات.
+                    <h3 class="text-base font-bold text-slate-900">تم استلام طلبكم بنجاح</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                        تم تسجيل الطلب في السجل برقم مرجعي <strong id="leadIdBadge" class="font-mono bg-white border border-slate-200 text-slate-900 px-2 py-0.5 rounded text-xs font-bold">#--</strong>، وبدأت منظومة الفرز الآلي تحليله واستخراج معايير الأولوية والإجراء المناسب.
                     </p>
-                    <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <div class="mt-5 flex flex-wrap items-center gap-3">
                         <a href="{{ route('leads.dashboard') }}" 
-                           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm">
-                            📊 الذهاب إلى لوحة المشرف لمشاهدة التحليل المباشر &larr;
+                           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm">
+                            <span>عرض الطلب في لوحة المشرف</span>
+                            <span>&larr;</span>
                         </a>
-                        <button type="button" onclick="resetForm()" class="text-xs text-emerald-800 underline font-semibold hover:text-emerald-950">
-                            + إرسال طلب تجريبي آخر
+                        <button type="button" onclick="resetForm()" class="text-xs text-slate-600 hover:text-slate-900 font-semibold px-2 py-1">
+                            تقديم استفسار آخر
                         </button>
                     </div>
                 </div>
@@ -145,50 +134,12 @@
 
 @section('scripts')
 <script>
-    const presets = {
-        1: {
-            name: "سعيد مروان",
-            company: "متجر المستلزمات العصرية",
-            email: "saeed@example.com",
-            phone: "+962791112233",
-            source: "website",
-            message: "السلام عليكم، نحن متجر أدوات منزلية بحاجة لبناء متجر إلكتروني متكامل مع بوابات دفع، ولدينا موعد إطلاق بعد 10 أيام. كم التكلفة والمدة التقريبية للتنفيذ؟"
-        },
-        2: {
-            name: "م. رامي حداد",
-            company: "أفق للتسويق والبرمجيات",
-            email: "rami.ai@example.com",
-            phone: "+962788889900",
-            source: "whatsapp",
-            message: "مرحباً، نريد استشارة تقنية حول أتمتة تصنيف العملاء وتكامل نماذج الذكاء الاصطناعي مع نظام CRM الداخلي خلال الأسبوعين القادمين. هل يمكن ترتيب جلسة مبيعات؟"
-        },
-        3: {
-            name: "هدى العلي",
-            company: "صالون لمسات",
-            email: "huda@example.com",
-            phone: "+962790001122",
-            source: "instagram",
-            message: "مرحبا، حبيت استفسر بشكل عام شو الخدمات اللي بتقدموها لمواقع الإنترنت؟ وبكم الأسعار التقريبية بدون استعجال؟"
-        }
-    };
-
-    function fillPreset(id) {
-        const data = presets[id];
-        if (!data) return;
-        document.getElementById('name').value = data.name;
-        document.getElementById('company').value = data.company;
-        document.getElementById('email').value = data.email;
-        document.getElementById('phone').value = data.phone;
-        document.getElementById('source').value = data.source;
-        document.getElementById('message').value = data.message;
-        document.getElementById('messageError').classList.add('hidden');
-    }
-
     async function submitLead(event) {
         event.preventDefault();
         const form = document.getElementById('leadForm');
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
         const btnSpinner = document.getElementById('btnSpinner');
         const successBox = document.getElementById('successBox');
         const leadIdBadge = document.getElementById('leadIdBadge');
@@ -196,7 +147,8 @@
 
         messageError.classList.add('hidden');
         submitBtn.disabled = true;
-        btnText.textContent = "جارٍ الحفظ وبدء الفرز الآلي...";
+        btnText.textContent = "جارٍ الحفظ والمعالجة الآلية...";
+        btnIcon.classList.add('hidden');
         btnSpinner.classList.remove('hidden');
 
         const payload = {
@@ -225,7 +177,7 @@
                     messageError.textContent = data.errors.message[0];
                     messageError.classList.remove('hidden');
                 } else {
-                    alert('حدث خطأ أثناء إرسال الطلب: ' + (data.message || 'يرجى مراجعة البيانات.'));
+                    alert('حدث خطأ أثناء إرسال الطلب: ' + (data.message || 'يرجى مراجعة البيانات والتحقق من الحقول المطلوبة.'));
                 }
                 return;
             }
@@ -239,7 +191,8 @@
             alert('تعذر الاتصال بالخادم: ' + error.message);
         } finally {
             submitBtn.disabled = false;
-            btnText.textContent = "🚀 إرسال الطلب وتشغيل الفرز الآلي";
+            btnText.textContent = "إرسال طلب الاستفسار وبدء الفرز";
+            btnIcon.classList.remove('hidden');
             btnSpinner.classList.add('hidden');
         }
     }

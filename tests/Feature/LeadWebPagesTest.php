@@ -58,3 +58,43 @@ test('it allows supervisor to update lead status from dashboard', function () {
     $response->assertRedirect();
     expect($lead->fresh()->status)->toBe('contacted');
 });
+
+test('it handles customer lead submission via web POST request', function () {
+    $response = $this->post('/leads', [
+        'name' => 'طارق الزعبي',
+        'company' => 'مجموعة الريادة',
+        'email' => 'tariq@example.com',
+        'phone' => '+962791234567',
+        'source' => 'website',
+        'message' => 'نحتاج استشارة في أتمتة خدمة العملاء.',
+    ]);
+
+    $response->assertRedirect('/dashboard');
+    $this->assertDatabaseHas('leads', [
+        'name' => 'طارق الزعبي',
+        'email' => 'tariq@example.com',
+    ]);
+});
+
+test('it allows supervisor to manually retry lead automation', function () {
+    \Illuminate\Support\Facades\Config::set('services.n8n.webhook_url', 'https://n8n.example.com/webhook/lead-triage');
+    \Illuminate\Support\Facades\Config::set('services.n8n.webhook_secret', 'secret-key');
+
+    \Illuminate\Support\Facades\Http::fake([
+        'https://n8n.example.com/webhook/lead-triage' => \Illuminate\Support\Facades\Http::response(['ok' => true], 200),
+    ]);
+
+    $lead = Lead::create([
+        'name' => 'سمير',
+        'message' => 'طلب مساعدة تقنية.',
+        'status' => 'new',
+        'automation_status' => 'failed',
+    ]);
+
+    $response = $this->post("/leads/{$lead->id}/retry");
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
+    expect($lead->fresh()->automation_status)->toBe('processed');
+});
+
