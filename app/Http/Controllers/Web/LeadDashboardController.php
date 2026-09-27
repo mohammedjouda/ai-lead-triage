@@ -46,13 +46,14 @@ class LeadDashboardController extends Controller
 
         $leads = $query->paginate(20)->withQueryString();
 
-        // High-level operational metrics
-        $allLeads = Lead::with('analysis')->get();
+        // High-level operational metrics calculated at database level
         $metrics = [
-            'total' => $allLeads->count(),
-            'qualified' => $allLeads->where('status', 'qualified')->count(),
-            'hot' => $allLeads->filter(fn ($l) => optional($l->analysis)->lead_score >= 80 || optional($l->analysis)->urgency === 'high')->count(),
-            'pending' => $allLeads->where('automation_status', '!=', 'processed')->count(),
+            'total' => Lead::count(),
+            'qualified' => Lead::where('status', 'qualified')->count(),
+            'hot' => Lead::whereHas('analysis', function ($q) {
+                $q->where('lead_score', '>=', 80)->orWhere('urgency', 'high');
+            })->count(),
+            'pending' => Lead::where('automation_status', '!=', 'processed')->count(),
         ];
 
         return view('leads.index', compact('leads', 'metrics'));

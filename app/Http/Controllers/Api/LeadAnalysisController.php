@@ -16,9 +16,11 @@ class LeadAnalysisController extends Controller
             $request->validated()
         );
 
-        $lead->update([
-            'status' => 'qualified',
-        ]);
+        if ($lead->status === 'new') {
+            $lead->update([
+                'status' => 'qualified',
+            ]);
+        }
 
         return response()->json([
             'message' => 'Lead analysis saved successfully.',

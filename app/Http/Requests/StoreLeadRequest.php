@@ -22,7 +22,7 @@ class StoreLeadRequest extends FormRequest
             'source' => [
                 'nullable',
                 'string',
-                'in:website,instagram,whatsapp,facebook,manual,api',
+                'in:website,instagram,whatsapp,facebook,manual,api,linkedin,email',
             ],
         ];
     }

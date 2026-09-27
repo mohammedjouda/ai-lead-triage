@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/leads', [LeadController::class, 'index']);
 Route::get('/leads/{lead}', [LeadController::class, 'show']);
-Route::post('/leads', [LeadController::class, 'store']);
+Route::post('/leads', [LeadController::class, 'store'])
+    ->middleware('throttle:lead-intake');
 
 Route::post('/leads/{lead}/analysis', [LeadAnalysisController::class, 'store'])
-    ->middleware(VerifyAutomationSecret::class);
+    ->middleware([VerifyAutomationSecret::class, 'throttle:60,1']);

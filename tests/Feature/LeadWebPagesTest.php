@@ -60,6 +60,8 @@ test('it allows supervisor to update lead status from dashboard', function () {
 });
 
 test('it handles customer lead submission via web POST request', function () {
+    \Illuminate\Support\Facades\Http::fake();
+
     $response = $this->post('/leads', [
         'name' => 'طارق الزعبي',
         'company' => 'مجموعة الريادة',
