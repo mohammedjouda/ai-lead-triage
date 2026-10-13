@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/License-MIT-slate?style=for-the-badge" alt="License MIT" />
 </p>
 
-An event-driven, production-grade **Lead Triage & Intelligence System** designed to eliminate lead decay in B2B sales operations. It ingests unstructured inbound leads across channels, routes them through asynchronous workers and workflow orchestration, uses Google Gemini to extract structured business intelligence under a strict typed contract, and provides a centralized, actionable sales workspace.
+An event-driven, production-minded **Lead Triage & Intelligence System** designed to reduce lead decay in B2B sales operations. It ingests unstructured inbound leads across channels, routes them through asynchronous workers and workflow orchestration, uses Google Gemini to extract structured business intelligence under a strict typed contract, and provides a centralized, actionable sales workspace.
 
 ---
 
@@ -23,7 +23,7 @@ flowchart TD
         OMNI["Omnichannel Connectors\n(Telegram / WhatsApp / Email)"]
     end
 
-    subgraph BACKEND["2. CORE BACKEND (Laravel 11) - System of Record"]
+    subgraph BACKEND["2. CORE BACKEND (Laravel 13) - System of Record"]
         SEC[Security Headers & Rate Limiting]
         DB_L[("Leads Table\nState: new")]
         EVT[LeadCreated Event]
@@ -33,7 +33,7 @@ flowchart TD
 
     subgraph ORCHESTRATION["3. ORCHESTRATION BUS (n8n)"]
         WH[Webhook Intake Node]
-        AUTH[Bearer Secret Auth]
+        AUTH["Shared Secret Auth\n(X-Automation-Secret)"]
         CTX[Context Sanitizer & Anti-Injection]
         DISP[Async Flow Dispatcher]
     end
@@ -91,18 +91,18 @@ flowchart TD
 
 ---
 
-## The Business Problem: Eliminating "Lead Decay"
+## The Business Problem: Lead Decay
 
 In B2B services, e-commerce, and agencies:
-* Inbound inquiries arrive via forms, messaging apps, and email in unstandardized, conversational text.
-* Sales reps spend hours manually reading, classifying, and researching each inquiry.
-* **Lead Decay**: Harvard Business Review research shows that delaying outreach past 15 minutes decreases deal qualification rates by over 80%.
-* Sales teams drown in noise, spam, and vague inquiries, often missing high-ticket buyers.
+- Inbound inquiries arrive via forms, messaging apps, and email in unstandardized, conversational text.
+- Sales reps spend hours manually reading, classifying, and researching each inquiry.
+- **Lead Decay**: Industry research on lead response time consistently shows that the longer a team waits to respond, the lower the chance of qualifying the lead.
+- Sales teams drown in noise, spam, and vague inquiries, often missing high-ticket buyers.
 
 ### The Solution
 This platform automates the intake-to-action pipeline:
 1. **Instant Normalization**: Ingests unstructured Arabic/English customer text.
-2. **Deterministic Triage**: Gemini extracts intent, calculates a quantitative `lead_score` (0–100), tags urgency (`low`, `medium`, `high`), and produces an executive summary and sales next step.
+2. **Structured Triage**: Gemini extracts intent, calculates a quantitative `lead_score` (0–100), tags urgency (`low`, `medium`, `high`), and produces an executive summary and sales next step.
 3. **Real-time Alerting**: High-priority opportunities instantly trigger Telegram alerts to supervisors.
 4. **Actionable Sales Workspace**: Reps open the lead card, view the intelligence brief, copy pre-drafted replies, or open direct WhatsApp conversations in a single click.
 
@@ -114,13 +114,13 @@ Rather than tightly coupling AI directly inside synchronous controllers or offlo
 
 | Component | Responsibility | Technology |
 | :--- | :--- | :--- |
-| **System of Record** | Single source of truth for business state, auth, rate limiting, and persistent storage. | **Laravel 11** |
+| **System of Record** | Single source of truth for business state, auth, rate limiting, and persistent storage. | **Laravel 13** |
 | **Integration Bus** | Asynchronous orchestration, external service connectivity, and retry routing. | **n8n** |
 | **Reasoning Engine** | Language understanding, intent classification, and structured scoring under contract. | **Google Gemini 2.5 Flash** |
 
 ### Defense-in-Depth AI Contract
 We never treat LLM outputs as trusted data:
-1. **System Prompt Isolation**: Customer messages are isolated within untrusted boundaries to neutralize Prompt Injection attacks.
+1. **System Prompt Isolation**: Customer messages are isolated within untrusted boundaries to reduce prompt injection risk.
 2. **Strict JSON Schema**: Gemini must return a validated JSON payload matching our domain contract.
 3. **Backend Schema Validation**: Laravel validates all callback fields (`intent`, `urgency`, `lead_score` between 0–100) using `FormRequest` validation before writing to MySQL.
 4. **State Machine Protection**: Callbacks will never overwrite or downgrade a lead that a sales rep has already moved to `contacted` or `converted`.
@@ -160,7 +160,7 @@ We never treat LLM outputs as trusted data:
   - State updater dropdown (`new`, `qualified`, `contacted`, `converted`, `lost`).
   - Manual retry trigger for failed automation jobs.
 
-### 5. Production Security Hardening
+### 5. Security Hardening
 - **Security Headers Middleware**: Enforces `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection`, `Referrer-Policy`, and strict `Permissions-Policy`.
 - **Intelligent Rate Limiting**: Dedicated rate limits on lead intake (`15 req/min`), callbacks, and manual retries (`20 req/min`).
 - **Input Sanitization**: XSS defense and length bounds.
@@ -169,28 +169,28 @@ We never treat LLM outputs as trusted data:
 
 ## Technical Stack
 
-* **Framework**: [Laravel 11.x](https://laravel.com)
-* **PHP**: 8.3+
-* **Database**: MySQL / MariaDB (Local Herd development)
-* **Testing**: [Pest PHP 3.x](https://pestphp.com)
-* **Workflow Automation**: [n8n](https://n8n.io) (Docker-hosted on port 80)
-* **LLM Engine**: Google Gemini 2.5 Flash via REST API
-* **Frontend**: Blade, Tailwind CSS, Alpine.js
-* **Local Server**: Laravel Herd (Windows)
+- **Framework**: [Laravel 13.x](https://laravel.com)
+- **PHP**: 8.3+
+- **Database**: MySQL / MariaDB (Local Herd development)
+- **Testing**: [Pest PHP 3.x](https://pestphp.com)
+- **Workflow Automation**: [n8n](https://n8n.io) (Docker-hosted on port 80)
+- **LLM Engine**: Google Gemini 2.5 Flash via REST API
+- **Frontend**: Blade, Tailwind CSS, Alpine.js
+- **Local Server**: Laravel Herd (Windows)
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-* [Laravel Herd](https://herd.laravel.com) or PHP 8.3+ with Composer
-* [Docker Desktop](https://www.docker.com) (for running n8n container)
-* MySQL database server
-* Google Gemini API Key
+- [Laravel Herd](https://herd.laravel.com) or PHP 8.3+ with Composer
+- [Docker Desktop](https://www.docker.com) (for running n8n container)
+- MySQL database server
+- Google Gemini API Key
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/<your-username>/ai-lead-triage.git
+git clone https://github.com/mohammedjouda/ai-lead-triage.git
 cd ai-lead-triage
 
 composer install
@@ -234,7 +234,7 @@ php artisan queue:work --tries=3 --backoff=10,30,60
 ```
 
 ### 5. Run n8n in Docker
-Run the pre-configured n8n container:
+Run the n8n container:
 ```bash
 docker run -d --name n8n-container -p 80:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
 ```
@@ -246,11 +246,11 @@ docker run -d --name n8n-container -p 80:5678 -v n8n_data:/home/node/.n8n docker
 ## Automated Test Suite
 
 The project includes an automated test suite with **28 tests and 114 assertions** built on Pest PHP covering:
-* Lead intake validation and defaults.
-* Queue dispatching and idempotency guards.
-* Security headers, rate limiting, and XSS sanitization.
-* State protection preventing retro-active demotion of converted leads.
-* Web dashboard rendering and supervisor status transitions.
+- Lead intake validation and defaults.
+- Queue dispatching and idempotency guards.
+- Security headers, rate limiting, and XSS sanitization.
+- State protection preventing retro-active demotion of converted leads.
+- Web dashboard rendering and supervisor status transitions.
 
 Run the test suite:
 ```bash
